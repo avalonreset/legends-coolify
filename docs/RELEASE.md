@@ -1,16 +1,62 @@
-# Early release checklist
+# Release procedure
 
-Target: 0.1.0, a useful read-only module with a reusable knowledge vault. No claim of comprehensive Coolify coverage, certified Brainstein maturity, production deployment automation or tested disaster recovery.
+This module ships a read-only Coolify CLI and reusable operational knowledge.
+A public tag alone does not complete a release. Use the central
+[module release contract](https://github.com/avalonreset/cto-legends/blob/main/docs/MODULE-RELEASE.md)
+and keep an evidence receipt outside the distributed source.
 
-1. Review official source dates, links and claim coverage; check knowledge links and public/private separation.
-2. Run all offline tests and `python scripts/check_release.py`.
-3. Build wheel and source distribution. Install the wheel into a clean environment; run offline doctor without credentials.
-4. Verify read-only doctor and chosen commands against an authorized Coolify instance. Keep its private evidence outside the repo. Record version and bounded test results only.
-5. Run Windows/Linux/macOS CI for portability. Identify untested live-platform claims explicitly.
-6. Inspect source archive contents and checksums. Release only intended public files, never the house predecessor folder.
-7. Publish tag and release. Record immutable commit and SHA-256 of its codeload ZIP.
-8. Add the complete module entry to the public `cto-legends` catalog and bump its catalog version. Do not change manager version or frozen skill text.
-9. Test catalog contracts and a fresh install from the release archive, then verify discovery, handoff, doctor and run.
-10. Publish the catalog update. Prove remote sync, install and handoff from a fresh manager home.
+## Product and evidence
 
-The canonical source archive includes the knowledge vault and CLI; the wheel installs the CLI. A public catalog entry is reviewed admission, not automatic repository discovery. Consumers sync the catalog before installing a newly admitted module.
+1. Inspect the actual previous release and current official Coolify sources.
+   Explain the implemented value, changed behavior and unsupported work.
+2. Review the source ledger, local links, credential handling and public/private
+   ownership. Never copy a private instance inventory or operational report
+   into this repository.
+3. Run all offline tests and `python scripts/check_release.py`. Test malformed
+   and partial provider responses, target identity, output redaction and report
+   preservation. Keep the fixed read-only endpoint boundary.
+4. Build the wheel and source distribution. Inspect their contents and install
+   the wheel into a clean environment outside the checkout. Verify offline
+   doctor and the packaged recipe and knowledge paths.
+5. Test the declared Windows, macOS and Linux environments, including native
+   Windows separately from WSL. Run the supported Python CI matrix on the exact
+   release commit. Record the interpreter and platform for fleet checks.
+6. Use an authorized Coolify instance for representative live reads. Record its
+   version and command outcomes privately; publish only a sanitized summary.
+   Provider-reported status is not independently verified service health,
+   backup integrity or a successful restore.
+7. Verify the packaged knowledge library against the released Empire engine:
+   preview, attach, repeat, upstream update, preservation of user notes and
+   refusal to overwrite modified references. No vault is changed during install.
+
+## Presentation and publication
+
+1. Resolve `legends-github` through the router. Run the appropriate readiness,
+   audit, researched SEO, metadata, README, legal and release workflows.
+   Apply useful findings rather than optimizing a checklist score.
+2. Verify attribution and license notices, generic onboarding, banner and
+   social artwork. Upload the social card through a supported authenticated
+   browser route; verify the saved setting and the image GitHub serves.
+3. Update changelog, release notes and validation evidence. Build final artifacts
+   after all included files are frozen. Record SHA-256 checksums and scan both
+   source and distribution for private residue.
+4. Push and wait for the exact-commit CI result before creating a unique
+   version tag and public release. Attach the tested artifacts and checksums.
+   Never replace a released version with different bytes.
+5. Download the immutable codeload archive and compute the checksum the manager
+   will use. Update the `cto-legends` catalog version, module identity,
+   discovery, recipe paths and probes. Keep the single router skill unchanged.
+6. Verify fresh public installation and upgrade from the prior version,
+   doctor, run, instruction handoff, packaged knowledge and outcome routing.
+   Publish the catalog and verify the normal remote sync path.
+7. Add or update the publisher's ecosystem profile directory. Preserve its
+   approved layout and generator behavior; verify the module link in the live
+   README. Catalog admission and profile inclusion are separate checks.
+8. Close the receipt with exact public URLs, versions, test results, live
+   evidence, costs and explicit remaining limitations.
+
+The knowledge library is optional: read it as Markdown or attach it with
+`legends-empire`. Coolify, a cloud provider account and Empire are not needed
+for offline readiness. Live reads require the user's own configured instance.
+Provider server operations belong to `legends-hetzner`; this module does not
+install Coolify, deploy applications or mutate infrastructure.

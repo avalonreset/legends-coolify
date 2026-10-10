@@ -1,0 +1,31 @@
+{
+  "product": "legends-coolify",
+  "banner_template": "legends-type-v1",
+  "social_template": "legends-social-v1",
+  "subtitle": "read-only checks and source-cited runbooks for your self-hosted applications",
+  "font": "Legends Regular",
+  "font_sha256": "3769f0f76477a7d9e2e6cb40422dedacb56c9ab1a6f7beee89b2b9ba6b8091ee",
+  "font_redistributed": false,
+  "files": [
+    {
+      "name": "banner.png",
+      "bytes": 68419,
+      "sha256": "2a4cfca8164f17104ce8c7866023618f9b0bff252bd0c576d6c0bf459068fd19"
+    },
+    {
+      "name": "banner.webp",
+      "bytes": 26516,
+      "sha256": "95cecf19bb65f5dcd924fcfdf97e545c5d6b10d8eed44bd8ff64135230245b8c"
+    },
+    {
+      "name": "preview.png",
+      "bytes": 26178,
+      "sha256": "09d35ec77e72d13877d53ff7754dd629cddcdf1ae856a4947cbb03a47bf6583f"
+    },
+    {
+      "name": "social-preview.png",
+      "bytes": 23192,
+      "sha256": "923a2739693573cbefc5ff8f32d83b248abc92daaed7b7b25814ed89c81773ae"
+    }
+  ]
+}

@@ -15,6 +15,6 @@ A healthy destination copy is insufficient to declare cutover. Two active writer
 
 After the destination accepts writes, reverting traffic may lose or split data. A rollback plan must explain how destination writes are reconciled. Do not advertise instant rollback when only an image or DNS record can be reversed.
 
-The single-writer boundary and reconciliation policy are recommendations. Coolify's documented restore workflow also requires stopping application writes before import. [Database restore](https://coolify.io/docs/databases/restore)
+The single-writer boundary and reconciliation policy are recommendations. Coolify's documented restore workflow also requires stopping application writes before import. [Database restore](https://coolify.io/docs/databases/restore). Coolify's migration guide uses the same recreate, temporary-domain verification, per-state move, and final-sync shape. [Migrate an application](https://coolify.io/docs/applications/operations/migrate-between-instances)
 
 Use [deployment planning](deployment-and-rollback.md), [backup evidence](backups-and-restore.md), and the [private receipt template](../templates/private-operation-receipt.md). The CLI does not execute this checklist.

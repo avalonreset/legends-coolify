@@ -6,4 +6,4 @@ The vault is a core part of `legends-coolify`: tools collect bounded evidence, n
 
 The public module contains reusable knowledge only. Completed operational receipts, private inventories, secrets, and raw incident logs belong outside this checkout. The [boundary note](../wiki/public-private-boundaries.md) explains what may be promoted into public knowledge.
 
-See [maintenance](../wiki/knowledge-maintenance.md) for the update loop and [current focus](../wiki/hot.md) for remaining evidence gaps. This initial baseline is source-reviewed; it does not claim a recovery drill or a Brainstein audit.
+See [maintenance](../wiki/knowledge-maintenance.md) for the update loop and [current focus](../wiki/hot.md) for remaining evidence gaps. This baseline is source-reviewed; it does not claim a recovery drill or a Brainstein audit. The same knowledge ships as an optional Empire pack (manifest `knowledge/coolify/pack.json`, schema `legends.knowledge-pack/v1`); see [knowledge packs](KNOWLEDGE-PACK.md) for attach and update behavior.

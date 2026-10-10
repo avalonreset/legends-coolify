@@ -15,6 +15,6 @@ Start with one concrete failure, its timestamp, and the last known working state
 | Browser fails, CLI succeeds | CORS, preflight, cookie/origin behavior | TLS must be broken |
 | Backups configured, recovery unknown | Execution, artifact access, restore drill | Schedule proves recoverability |
 
-The HTTP symptom rows are hypotheses, not unique diagnoses. Coolify's [troubleshooting index](https://coolify.io/docs/troubleshoot) has focused guides for gateway failures, certificate problems, and server validation. [Application operations](https://coolify.io/docs/applications/operations/overview) separates deployment output from runtime logs.
+The HTTP symptom rows are hypotheses, not unique diagnoses. Coolify's [troubleshooting index](https://coolify.io/docs/troubleshoot) has focused guides for gateway failures, certificate problems, server validation, 504 timeouts, dashboard access, and server-side failures. [Application operations](https://coolify.io/docs/applications/operations/overview) separates deployment output from runtime logs.
 
 Record a sanitized conclusion and the check that supported it. Keep raw logs private and inspect for secrets before any sharing. If upstream and live behavior conflict, record the version and uncertainty, then update the [source ledger](../references/sources.md) through [maintenance](knowledge-maintenance.md).

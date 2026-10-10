@@ -15,6 +15,6 @@ Inventory establishes which objects a token can see. It is not an inventory of e
 
 Coolify exposes unauthenticated health endpoints separately from protected resource APIs. [API overview](https://coolify.io/docs/api/overview)
 
-For application checks, verify the probe's internal port and command inside the final container. HTTP probes need an installed client. Compose workloads define their own component checks. With Traefik, failed application health can remove routing targets. [Health checks](https://coolify.io/docs/applications/configuration/health-checks)
+For application checks, verify the probe's internal port and command inside the final container. HTTP probes need an installed client. Compose workloads define their own component checks. With Traefik, failed application health can remove routing targets; when every container is unhealthy, Traefik can return 404 or No available server instead of forwarding. A passing container status is therefore not proof of application health. The generated HTTP check judges only the probe client exit status, not the Expected code or Expected response text fields. [Health checks](https://coolify.io/docs/applications/configuration/health-checks)
 
 Use a private [receipt](../templates/private-operation-receipt.md) to record timestamp, version, scope, observed layers, and unknowns. Do not translate `health` command success into a blanket healthy-system claim. Follow [troubleshooting](troubleshooting.md) for the next discriminating check.

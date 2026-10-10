@@ -9,9 +9,11 @@ Start with [Overview](overview.md), [Current focus](hot.md), and the [source led
 | Connect safely | [API and permissions](api-and-permissions.md) | `doctor` checks local readiness |
 | Understand resources | [Inventory and health](inventory-and-health.md) | `inventory`, `health` |
 | Review configuration | [Environment, TLS and CORS](environment-tls-cors.md) | `env --uuid` lists names only |
-| Prepare a change | [Deployment and rollback](deployment-and-rollback.md) | `plan --uuid` is advisory |
+| Prepare a change | [Deployment and rollback](deployment-and-rollback.md) | `plan --uuid` is advisory; `deployments` reads running and history windows |
 | Assess recoverability | [Backups and restore](backups-and-restore.md) | `backups --uuid` reads schedule metadata |
 | Move a workload | [Migration and single writer](migration-and-single-writer.md) | Read-only evidence plus private plan |
+| Plan across versions | [PaaS lifecycle and version drift](paas-lifecycle-and-versions.md) | Advisory planning plus private version record |
+| Separate server from PaaS | [Coolify and Hetzner boundary](coolify-hetzner-boundary.md) | Ownership table, no server reads |
 | Investigate failure | [Troubleshooting](troubleshooting.md) | Compare independent evidence layers |
 | Improve the knowledge | [Maintenance](knowledge-maintenance.md) | [Source update template](../templates/source-update.md) |
 

@@ -1,0 +1,90 @@
+{
+  "schema": "legends.knowledge-pack/v1",
+  "id": "coolify",
+  "module": "legends-coolify",
+  "version": "0.2.0",
+  "entrypoint": "index.md",
+  "files": [
+    {
+      "path": "api-and-permissions.md",
+      "sha256": "898fc8d304974100e538c2eb1436e749421fe2f03922afdf22ad8a79c56f3e92"
+    },
+    {
+      "path": "backups-and-restore.md",
+      "sha256": "d2084c092561670e0437c0e0300b72375874532eb05654847cb6ba4b4d6e925f"
+    },
+    {
+      "path": "coolify-hetzner-boundary.md",
+      "sha256": "b0a87a6d669332102b6c810895f104a89441e221383b6e42478cba7e62f54dfc"
+    },
+    {
+      "path": "deployment-and-rollback.md",
+      "sha256": "fb2e6f73a969891dfdafc1bf10e17c0c81d94d8b4af7943c7894334f0cb4bd21"
+    },
+    {
+      "path": "environment-tls-cors.md",
+      "sha256": "c1a9960d1235c079730d37801957988d6887b0d2e6c148df0fe18e565771381a"
+    },
+    {
+      "path": "hot.md",
+      "sha256": "0c11e95de334adff04eba99fa5df478158799673ec24f36fe941985f3d8cc6c9"
+    },
+    {
+      "path": "index.md",
+      "sha256": "17df04a0ee41f011fcc5dd251636ddd929a005c0f2fee4ca7d8dbf7d0c82793e"
+    },
+    {
+      "path": "inventory-and-health.md",
+      "sha256": "a27dcd170071d7cebe67ad049a873c0a47f7e919cb66c39af395b0471a943f97"
+    },
+    {
+      "path": "knowledge-maintenance.md",
+      "sha256": "51590d5160fe766075cc6d6ef42f1b4c3bb5baf8e64c5c6cb6184a453c718aa4"
+    },
+    {
+      "path": "log.md",
+      "sha256": "28c0ae2924fc6245de415143813d5c5423c69ce59edd220652d7a1c0d6af874d"
+    },
+    {
+      "path": "migration-and-single-writer.md",
+      "sha256": "b0376605990a04ec45e64f9556b6ec39374da23ab47133c0c223c27f892be77d"
+    },
+    {
+      "path": "overview.md",
+      "sha256": "ee040ce48e5708d3d442c14d663a3b27c9029e47e2dbbeb6ff1e27324b7eea3a"
+    },
+    {
+      "path": "paas-lifecycle-and-versions.md",
+      "sha256": "2427702cc9b7f93eb54ea0c1c8a9b6cc10638df7775afe7023213d0b9acedf86"
+    },
+    {
+      "path": "public-private-boundaries.md",
+      "sha256": "bcf9afe88b6536ff1b7d153ca6dbe7fda1f81a1679afb8429946be979b56b357"
+    },
+    {
+      "path": "sources.md",
+      "sha256": "dae8073626e95c9885fd45acb14fc2d25e381dadd4da2114c5d36d272d72bdb3"
+    },
+    {
+      "path": "templates/private-operation-receipt.md",
+      "sha256": "d5d64216cafd5fdd25a5d1670861a09017ee4e3ab5bcd66447c59ac0e19ae032"
+    },
+    {
+      "path": "templates/restore-proof.md",
+      "sha256": "5fdc9a856077330e8045e99af1303c6cf9296a7344e517d4a18dfb8dd722fb46"
+    },
+    {
+      "path": "templates/source-update.md",
+      "sha256": "0ee2b93b3d77356a194d5b3db0c8d84d81d7a1e365db0acc621842c7af1afeed"
+    },
+    {
+      "path": "troubleshooting.md",
+      "sha256": "46b1a35a34a82dd60f53a6369744991b8fc064cb472912eb63fac82f8f0789ef"
+    }
+  ],
+  "ontology": {
+    "suggested_home": "wiki/library/legends-coolify/coolify",
+    "purpose": "Inspect Coolify through its read-only API with source-cited runbooks for health, configuration, recovery, migration, and lifecycle planning.",
+    "kind": "library"
+  }
+}
