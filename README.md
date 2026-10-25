@@ -137,7 +137,7 @@ is explicit; updates preserve user notes and refuse conflicting reference edits.
 `legends-empire` 0.3.1+ requires Python 3.11+ for attachment; native Windows writes require
 local fixed NTFS. The CLI itself retains its Python 3.10+ requirement.
 
-## Project organization
+## Architecture and project layout
 
 | Location | Purpose |
 |---|---|
@@ -150,6 +150,14 @@ local fixed NTFS. The CLI itself retains its Python 3.10+ requirement.
 | `skills/cto-legends/SKILL.md` | Unmodified central router recipe |
 
 Private infrastructure and the earlier house PowerShell tools are not distributed here. Their operational lessons inform this module, but there is no automatic migration of credentials or production fixtures.
+
+## FAQ
+
+**Does `legends-coolify` deploy, restart, or mutate Coolify resources?**
+No. This release is strictly read-only. It inspects applications, databases, services, servers, environment variable metadata (never secret values), backup schedules, and deployment history, and generates advisory deployment checklists.
+
+**Why does `legends-coolify` refuse HTTP or self-signed redirects?**
+The transport requires verified HTTPS origins, refuses redirects, and ignores ambient proxy variables so that API tokens are never forwarded over unverified links.
 
 ## Contribute
 
