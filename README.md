@@ -62,12 +62,12 @@ module discoverable; installation remains a separate choice.
 
 ### Standalone install
 
-Python 3.10 or newer on Windows, macOS or Linux. The CLI uses the Python standard
+Python 3.11 or newer on Windows, macOS or Linux. The CLI uses the Python standard
 library and has no runtime dependencies. Use `python3` where that is your
 Python command. See [validation](docs/VALIDATION.md) for tested versions and limits.
 
 ```sh
-git clone --branch v0.2.0 https://github.com/avalonreset/legends-coolify.git
+git clone --branch v0.2.1 https://github.com/avalonreset/legends-coolify.git
 cd legends-coolify
 python -m pip install .
 legends-coolify doctor
@@ -135,7 +135,7 @@ pack has its own version and `knowledge/coolify/pack.json` manifest. Managed ref
 remain separate from your private inventory, decisions and receipts. Attachment
 is explicit; updates preserve user notes and refuse conflicting reference edits.
 `legends-empire` 0.3.1+ requires Python 3.11+ for attachment; native Windows writes require
-local fixed NTFS. The CLI itself retains its Python 3.10+ requirement.
+local fixed NTFS. The CLI itself retains its Python 3.11+ requirement.
 
 ## Architecture and project layout
 

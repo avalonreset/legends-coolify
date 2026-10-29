@@ -1,6 +1,6 @@
 """Offline resource discovery for wheel installs without a source checkout.
 
-Contract (0.2.0): resolve the knowledge root, the entry recipe and the
+Contract (0.2.1): resolve the knowledge root, the entry recipe and the
 pack file list from either the installed ``legends_coolify._data`` mirror
 (source ``package_data``) or the exact source checkout parent validated by
 module marker (source ``checkout``), else ``missing``. Pack content is

@@ -243,14 +243,14 @@ class WheelSelection(unittest.TestCase):
 
     def test_editable_install_skips(self):
         direct = '{"dir_info": {"editable": true}, "url": "file:///src"}'
-        fake = FakeDist("legends_coolify-0.2.0.dist-info", direct)
+        fake = FakeDist("legends_coolify-0.2.1.dist-info", direct)
         with patch.object(importlib_metadata, "distributions", return_value=[fake]):
             dist, reason = installed_wheel_dist()
         self.assertIsNone(dist)
         self.assertIn("editable", reason)
 
     def test_wheel_distribution_accepted(self):
-        fake = FakeDist("legends_coolify-0.2.0.dist-info")
+        fake = FakeDist("legends_coolify-0.2.1.dist-info")
         with patch.object(importlib_metadata, "distributions", return_value=[fake]):
             dist, reason = installed_wheel_dist()
         self.assertIs(dist, fake)
@@ -258,7 +258,7 @@ class WheelSelection(unittest.TestCase):
 
     def test_wheel_preferred_over_shadowing_egg_info(self):
         egg = FakeDist("legends_coolify.egg-info")
-        wheel = FakeDist("legends_coolify-0.2.0.dist-info")
+        wheel = FakeDist("legends_coolify-0.2.1.dist-info")
         with patch.object(importlib_metadata, "distributions", return_value=[egg, wheel]):
             dist, reason = installed_wheel_dist()
         self.assertIs(dist, wheel)

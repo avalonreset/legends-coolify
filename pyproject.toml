@@ -4,9 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "legends-coolify"
-version = "0.2.0"
+version = "0.2.1"
 description = "A source-cited Coolify knowledge vault and read-only operational checks for agents."
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = "MIT"
 authors = [{name = "Benjamin Samar / cto-legends"}]
 dependencies = []

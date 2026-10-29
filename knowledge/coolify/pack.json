@@ -2,7 +2,7 @@
   "schema": "legends.knowledge-pack/v1",
   "id": "coolify",
   "module": "legends-coolify",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "entrypoint": "index.md",
   "files": [
     {

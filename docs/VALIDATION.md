@@ -1,6 +1,6 @@
 # Validation
 
-## 0.2.0
+## 0.2.1
 
 Checked 2026-10-10 UTC. Source and installed artifacts were tested separately.
 
@@ -28,7 +28,7 @@ These are environment limits, not silently counted passes.
   upstream update preserving the user's index and private notes, and refusal
   of edited reference files before mutation. Tests used synthetic vaults.
 - GitHub Actions runs six core jobs across Windows, macOS and Linux with
-  Python 3.10 and 3.14, plus three native Empire attachment jobs with Python
+  Python 3.11 and 3.14, plus three native Empire attachment jobs with Python
   3.11. Consult the checks on the exact release commit for their result.
 - Source and distribution checks cover required files, Markdown links,
   artifact notices, image metadata and known private-residue patterns.
@@ -45,7 +45,7 @@ with every Coolify version. Environment values and deployment logs are excluded.
 Collected state does not certify application health, completed backups,
 restorability or deployment execution.
 
-The core CLI requires Python 3.10+. Optional Empire attachment requires
+The core CLI requires Python 3.11+. Optional Empire attachment requires
 Python 3.11+; native Windows writes require local fixed NTFS and the released
 Empire backend's security conditions. Power-loss durability is not claimed
 equivalent to POSIX directory flushing. Installation never writes to a vault.

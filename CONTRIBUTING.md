@@ -4,7 +4,7 @@ Start with [AGENTS.md](AGENTS.md), [the agent recipe](docs/AGENT-RECIPE.md)
 and [the knowledge index](wiki/index.md). Keep changes focused on repeatable
 read-only Coolify checks and accurate, source-cited operating guidance.
 
-Use Python 3.10+ and a local checkout:
+Use Python 3.11+ and a local checkout:
 
 ```sh
 python -m pip install .
