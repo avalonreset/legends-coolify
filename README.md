@@ -174,3 +174,10 @@ python -m legends_coolify doctor
 
 MIT licensed. Documentation links to upstream sources; no Coolify source code is
 bundled. See [attribution](NOTICE.md) and [support](SUPPORT.md).
+
+---
+
+**Specification & benchmarks on cto-legends.com:**
+- **Module specification & architecture matrix:** [cto-legends.com/modules/legends-coolify](https://cto-legends.com/modules/legends-coolify)
+- **Related engineering dispatches:** [Railway vs Render: Fly.io vs Self-Hosted Coolify PaaS](https://cto-legends.com/blog?post=railway-vs-render-fly-io-coolify-paas) · [Hetzner vs AWS & DigitalOcean: Cloud Server Planning](https://cto-legends.com/blog?post=hetzner-vs-aws-digitalocean-cloud-server-planning) · [How to Build AI Agents: Production CLI & MCP Routing](https://cto-legends.com/blog?post=how-to-build-ai-agents-cli-mcp-routing)
+- **Ecosystem hub:** [cto-legends.com/home](https://cto-legends.com/home)
