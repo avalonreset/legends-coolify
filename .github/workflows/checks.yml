@@ -107,7 +107,7 @@ jobs:
         shell: bash
         run: |
           set -e
-          python -m pip install build
+          python -m pip install --upgrade "pip>=26.2.2" build
           python -m build --wheel
           python -m pip install dist/*.whl
       - name: Check out pinned Empire engine
@@ -115,8 +115,8 @@ jobs:
         with:
           persist-credentials: false
           repository: avalonreset/legends-empire
-          # Immutable legends-empire 0.3.1 transaction engine.
-          ref: dac252a647cbe8b42285317fe096e20afaf2fbe9
+          # Immutable legends-empire 0.3.4 transaction engine.
+          ref: 1ede96ad670b60b215b66457369691da6c61d017
           path: .integration/empire
       - name: Attach packaged knowledge on the native OS
         shell: bash

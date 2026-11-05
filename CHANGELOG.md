@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.2 - 2026-11-05
+
+- Add `.legends-module`, `docs/router-provenance.json`, and `THIRD_PARTY_NOTICES.md`, remove duplicate `NOTICE.md` and tracked `.obsidian/app.json`, and standardize the `## Agent setup (via \`cto-legends\`)` section in `README.md`.
+- Upgrade `scripts/check_release.py`, `AGENTS.md`, and `docs/AGENT-RECIPE.md` with Windows Defender / EDR anti-ransomware guardrails and knowledge pack hash verification.
+- Pin `avalonreset/legends-empire` `v0.3.4` (`1ede96ad670b60b215b66457369691da6c61d017`) and `pip>=26.2.2` in `.github/workflows/checks.yml`.
+
 ## 0.2.1 - 2026-10-29
 
 - Raise minimum supported Python runtime to Python 3.11 (`requires-python = ">=3.11"`) across package metadata, documentation, and multi-OS CI.

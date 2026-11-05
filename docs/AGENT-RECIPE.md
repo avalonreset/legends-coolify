@@ -40,3 +40,10 @@ The vault also ships as an attachable Empire knowledge pack (`knowledge/coolify/
 ## Learn from the work
 
 Keep the private receipt in the selected workspace. Propose a sanitized general lesson for `wiki/` with dated sources and a reproducible check; never copy raw incidents, secrets or client resource IDs into the distributed vault.
+
+## EDR and Security Guardrails
+
+- Never spawn hidden consoles, execution-policy bypass shell wrappers, or background localhost daemons.
+- Never read local browser profile databases, DPAPI stores, or third-party credential stores.
+- Never follow symlinks or overwrite existing files when writing `--out` reports (`O_CREAT | O_EXCL` new-file semantics only).
+- Use only the explicit `COOLIFY_BASE_URL` and `COOLIFY_API_TOKEN` environment variables over verified HTTPS origins with redirects disabled.

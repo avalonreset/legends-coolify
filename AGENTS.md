@@ -8,5 +8,6 @@
 6. Source-cite domain guidance and date reviews. Update links and source-ledger claim coverage when adding knowledge.
 7. Run offline unit tests and `scripts/check_release.py` before release. Follow `docs/RELEASE.md` for packaging and catalog admission.
 8. Use one registered `cto-legends` skill. The module recipe is loaded on demand, not installed as a separate host skill.
+9. EDR and Security Guardrails: Never spawn hidden consoles, execution-policy bypass shell wrappers, or background localhost daemons. Never read local browser profile databases, DPAPI stores, or third-party credential stores. Never follow symlinks or overwrite existing files when writing `--out` reports. Use only the explicit `COOLIFY_BASE_URL` and `COOLIFY_API_TOKEN` environment variables.
 
 No public provider mutation or private-data publication is authorized by these instructions.

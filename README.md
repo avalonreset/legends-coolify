@@ -43,7 +43,7 @@ is an advisory checklist, not an executable deployment. Use Coolify's official
 tools for an authorized change. This project is independently maintained and
 is not an official Coolify integration.
 
-## Install with your agent
+## Agent setup (via `cto-legends`)
 
 The shared `cto-legends` skill discovers the module and loads its
 [agent recipe](docs/AGENT-RECIPE.md) on demand. It is the only registered skill;
@@ -67,7 +67,7 @@ library and has no runtime dependencies. Use `python3` where that is your
 Python command. See [validation](docs/VALIDATION.md) for tested versions and limits.
 
 ```sh
-git clone --branch v0.2.1 https://github.com/avalonreset/legends-coolify.git
+git clone --branch v0.2.2 https://github.com/avalonreset/legends-coolify.git
 cd legends-coolify
 python -m pip install .
 legends-coolify doctor
@@ -173,7 +173,7 @@ python -m legends_coolify doctor
 ```
 
 MIT licensed. Documentation links to upstream sources; no Coolify source code is
-bundled. See [attribution](NOTICE.md) and [support](SUPPORT.md).
+bundled. See [attribution](NOTICE), [third-party notices](THIRD_PARTY_NOTICES.md), and [support](SUPPORT.md).
 
 ---
 

@@ -25,7 +25,8 @@ MAX_FILES = 4000
 REQUIRED_DATA = [
     "legends_coolify/_data/README.md",
     "legends_coolify/_data/LICENSE",
-    "legends_coolify/_data/NOTICE.md",
+    "legends_coolify/_data/NOTICE",
+    "legends_coolify/_data/THIRD_PARTY_NOTICES.md",
     "legends_coolify/_data/SUPPORT.md",
     "legends_coolify/_data/CONTRIBUTING.md",
     "legends_coolify/_data/AGENTS.md",

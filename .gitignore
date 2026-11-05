@@ -8,4 +8,4 @@ dist/
 .env.*
 reports/
 private/
-.obsidian/workspace*.json
+.obsidian/

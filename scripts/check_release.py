@@ -1,5 +1,7 @@
-"""Offline release checks for links, private residue and required artifacts."""
+"""Offline release checks for links, private residue, EDR hygiene, and required artifacts."""
 import argparse
+import hashlib
+import json
 from pathlib import Path
 import re
 import struct
@@ -8,16 +10,35 @@ from urllib.parse import unquote
 
 ROOT = Path(__file__).resolve().parents[1]
 SKIP = {".git", ".venv", "dist", "build", "__pycache__", ".integration"}
-REQUIRED = ["README.md", "LICENSE", "AGENTS.md", "SECURITY.md", "wiki/index.md",
-            "references/sources.md", "docs/AGENT-RECIPE.md", "docs/RELEASE.md",
-            "templates/private-operation-receipt.md", "skills/cto-legends/SKILL.md"]
+REQUIRED = [
+    "README.md",
+    "LICENSE",
+    "AGENTS.md",
+    "SECURITY.md",
+    "wiki/index.md",
+    "references/sources.md",
+    "docs/AGENT-RECIPE.md",
+    "docs/RELEASE.md",
+    "templates/private-operation-receipt.md",
+    "skills/cto-legends/SKILL.md",
+]
 TEXT_SUFFIXES = {".md", ".py", ".json", ".toml", ".yml", ".in", ".txt", ".cfg", ".ini"}
-# Private infrastructure patterns are encoded to avoid including the actual
-# house identifiers in the released checker itself.
-FORBIDDEN = [r"(?i)[a-z]:\\users\\", r"(?i)\.tail[a-z0-9]+\.ts\.net",
-             r"(?i)sk_live_[a-z0-9]{12,}", r"gh[pousr]_[A-Za-z0-9]{20,}",
-             r"-----BEGIN (?:RSA |OPENSSH |EC )?PRIVATE KEY-----"]
-FORBIDDEN_FILES = {".pem", ".key", ".p12", ".pfx"}
+FORBIDDEN = [
+    r"(?i)[a-z]:\\users\\",
+    r"(?i)\.tail[a-z0-9]+\.ts\.net",
+    r"(?i)sk_live_[a-z0-9]{12,}",
+    r"gh[pousr]_[A-Za-z0-9]{20,}",
+    r"-----BEGIN (?:RSA |OPENSSH |EC )?PRIVATE KEY-----",
+    r"CREATE_NO_WINDOW",
+    r"0x08000000",
+    r"(?i)-WindowStyle\s+Hidden",
+    r"(?i)-ExecutionPolicy\s+Bypass",
+    r"(?i)ctypes\.windll",
+    r"(?i)CryptUnprotectData",
+    r"(?i)GetAsyncKeyState",
+    r"(?i)IndexedDB",
+]
+FORBIDDEN_FILES = {".pem", ".key", ".p12", ".pfx", ".ps1", ".bat", ".cmd", ".vbs", ".ahk"}
 PNG_METADATA_CHUNKS = {"tEXt", "iTXt", "zTXt", "eXIf"}
 WEBP_METADATA_CHUNKS = {b"EXIF", b"XMP "}
 
@@ -67,8 +88,6 @@ def check(root=ROOT):
             errors.append(f"Missing required file: {name}")
     manifest = root / "assets" / "manifest.json"
     if manifest.is_file():
-        import hashlib
-        import json
         try:
             entries = json.loads(manifest.read_text(encoding="utf-8-sig"))["files"]
         except (ValueError, KeyError):
@@ -85,12 +104,29 @@ def check(root=ROOT):
                 errors.append(f"Manifest byte mismatch: {entry.get('name')}")
             if hashlib.sha256(raw).hexdigest() != entry.get("sha256"):
                 errors.append(f"Manifest hash mismatch: {entry.get('name')}")
+    pack_manifest = root / "knowledge" / "coolify" / "pack.json"
+    vault_dir = root / "knowledge" / "coolify" / "vault"
+    if pack_manifest.is_file() and vault_dir.is_dir():
+        try:
+            pack_data = json.loads(pack_manifest.read_text(encoding="utf-8-sig"))
+            pack_files = pack_data["files"]
+        except (ValueError, KeyError):
+            errors.append("knowledge/coolify/pack.json is invalid.")
+            pack_files = []
+        for item in pack_files:
+            rel_path = item.get("path", "")
+            target = vault_dir / rel_path
+            if not target.is_file():
+                errors.append(f"Knowledge pack file missing: {rel_path}")
+                continue
+            if hashlib.sha256(target.read_bytes()).hexdigest() != item.get("sha256"):
+                errors.append(f"Knowledge pack hash mismatch: {rel_path}")
     for path in root.rglob("*"):
         rel = path.relative_to(root)
         if not path.is_file() or any(p in SKIP or p.endswith(".egg-info") for p in rel.parts):
             continue
         if path.suffix.lower() in FORBIDDEN_FILES:
-            errors.append(f"Private key material must not ship: {rel}")
+            errors.append(f"Private key or forbidden script material must not ship: {rel}")
             continue
         if path.suffix.lower() in {".png", ".webp"}:
             errors.extend(f"{rel}: {issue}" for issue in image_metadata_issues(path))
@@ -101,7 +137,7 @@ def check(root=ROOT):
         if path.name != "check_release.py":
             for pattern in FORBIDDEN:
                 if re.search(pattern, text):
-                    errors.append(f"Possible private residue: {rel}")
+                    errors.append(f"Possible private or EDR-sensitive residue ({pattern}): {rel}")
         if path.suffix != ".md":
             continue
         if "\u2014" in text or "\u2013" in text:
