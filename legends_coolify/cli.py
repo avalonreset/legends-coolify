@@ -82,16 +82,15 @@ def check_not_cfa_protected(path):
             except OSError:
                 homes.add(Path(val))
     for home in homes:
-        for folder_name in _CFA_PROTECTED_NAMES:
-            protected = home / folder_name
-            try:
-                if resolved == protected or resolved.is_relative_to(protected):
-                    raise CoolifyError(
-                        "Refusing to write into a Windows Controlled Folder Access "
-                        "protected directory; choose a workspace report path."
-                    )
-            except ValueError:
-                continue
+        try:
+            rel = resolved.relative_to(home)
+        except ValueError:
+            continue
+        if rel.parts and rel.parts[0].lower() in _CFA_PROTECTED_NAMES:
+            raise CoolifyError(
+                "Refusing to write into a Windows Controlled Folder Access "
+                "protected directory; choose a workspace report path."
+            )
     if os.name == "nt":
         sys_drive = os.environ.get("SystemDrive", "C:").rstrip("\\/")
         for sys_dir in ("Windows", "Program Files", "Program Files (x86)"):
