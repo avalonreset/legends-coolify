@@ -67,7 +67,7 @@ library and has no runtime dependencies. Use `python3` where that is your
 Python command. See [validation](docs/VALIDATION.md) for tested versions and limits.
 
 ```sh
-git clone --branch v0.2.2 https://github.com/avalonreset/legends-coolify.git
+git clone --branch v0.2.3 https://github.com/avalonreset/legends-coolify.git
 cd legends-coolify
 python -m pip install .
 legends-coolify doctor
@@ -87,7 +87,7 @@ Through the router, run `cto-legends run legends-coolify -- resources`.
 
 Set `COOLIFY_BASE_URL` to the HTTPS **origin**, such as `https://coolify.example.com`, and `COOLIFY_API_TOKEN` to a token with `read` permission. Load the token from your own secret manager into the environment. Do not put a real token in chat, shell history or a repository.
 
-The client requires verified HTTPS, refuses redirects and ignores ambient proxy variables. Use a direct reachable instance or an operator-managed tunnel with a valid HTTPS origin. No default house server, local credential file discovery or insecure TLS switch is included.
+The client requires verified HTTPS, refuses redirects, ignores ambient proxy variables, and blocks loopback, unspecified, multicast, and link-local (`169.254.0.0/16`, `fe80::/10`) targets. Private RFC1918, ULA, and Tailscale origins are rejected by default; pass `--allow-private-host` (or set `COOLIFY_ALLOW_PRIVATE_HOST=1`) when inspecting an authorized private-LAN Coolify instance. No default house server, local credential file discovery or insecure TLS switch is included.
 
 ```sh
 legends-coolify doctor --live

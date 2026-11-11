@@ -9,7 +9,7 @@ reference shelf, not a vault and not a skill.
 - Schema: `legends.knowledge-pack/v1`
 - Id: `coolify`
 - Module: `legends-coolify`
-- Version: `0.2.1`
+- Version: `0.2.3`
 - Entrypoint: `index.md`
 - Suggested home: `wiki/library/legends-coolify/coolify`
 - Ontology kind: `library`
@@ -71,7 +71,7 @@ PowerShell plug-in form (two single lines, forward slashes accepted):
 
 ```powershell
 $manifest = (cto-legends run legends-coolify -- resources | ConvertFrom-Json).pack_manifest
-cto-legends run legends-empire -- knowledge attach $manifest --vault E:/Empire --operation-id attach-coolify-001 --generated-at 2026-10-10T12:00:00Z
+cto-legends run legends-empire -- knowledge attach $manifest --vault /path/to/vault --operation-id attach-coolify-001 --generated-at 2026-10-10T12:00:00Z
 ```
 
 Standalone form without the router: run the installed Empire entry

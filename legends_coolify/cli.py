@@ -10,6 +10,17 @@ from . import __version__
 from .client import Client, CoolifyError, LISTS, backup_summary, deployment_summary, deployment_window, env_summary, identifier, records, scrub_token, summary
 from .resources import resolve as resolve_resources, status as resources_status
 
+_MACOS_SYSTEM_SYMLINKS = {Path("/var"), Path("/tmp"), Path("/etc")}
+_CFA_PROTECTED_NAMES = {
+    "desktop",
+    "documents",
+    "pictures",
+    "videos",
+    "music",
+    "onedrive",
+    "favorites",
+}
+
 
 def bounded_int(name, low, high):
     def convert(text):
@@ -21,6 +32,78 @@ def bounded_int(name, low, high):
             raise argparse.ArgumentTypeError("%s must be between %d and %d." % (name, low, high))
         return value
     return convert
+
+
+def _is_link_or_reparse(path: Path) -> bool:
+    if os.path.islink(path) or path.is_symlink():
+        return True
+    isjunction = getattr(os.path, "isjunction", None)
+    if callable(isjunction) and isjunction(path):
+        return True
+    try:
+        st = os.lstat(path)
+    except OSError:
+        return False
+    return bool(getattr(st, "st_reparse_tag", 0))
+
+
+def check_no_symlink_chain(path):
+    """Refuse leaf or ancestor symlinks/junctions (exempting macOS /var, /tmp, /etc)."""
+    current = Path(path)
+    while True:
+        if _is_link_or_reparse(current):
+            if not (sys.platform == "darwin" and current in _MACOS_SYSTEM_SYMLINKS):
+                raise CoolifyError(
+                    "Refusing to write through a symlink; choose a new private report path."
+                )
+        parent = current.parent
+        if parent == current:
+            break
+        current = parent
+
+
+def check_not_cfa_protected(path):
+    """Refuse writes into Windows Controlled Folder Access protected directories."""
+    target = Path(path)
+    try:
+        resolved = target.resolve(strict=False)
+    except OSError:
+        resolved = target.absolute()
+    homes = set()
+    try:
+        homes.add(Path.home().resolve(strict=False))
+    except OSError:
+        pass
+    for env_key in ("USERPROFILE", "HOME"):
+        val = os.environ.get(env_key, "").strip()
+        if val:
+            try:
+                homes.add(Path(val).resolve(strict=False))
+            except OSError:
+                homes.add(Path(val))
+    for home in homes:
+        for folder_name in _CFA_PROTECTED_NAMES:
+            protected = home / folder_name
+            try:
+                if resolved == protected or resolved.is_relative_to(protected):
+                    raise CoolifyError(
+                        "Refusing to write into a Windows Controlled Folder Access "
+                        "protected directory; choose a workspace report path."
+                    )
+            except ValueError:
+                continue
+    if os.name == "nt":
+        sys_drive = os.environ.get("SystemDrive", "C:").rstrip("\\/")
+        for sys_dir in ("Windows", "Program Files", "Program Files (x86)"):
+            protected_sys = Path(sys_drive + "\\" + sys_dir)
+            try:
+                if resolved == protected_sys or resolved.is_relative_to(protected_sys):
+                    raise CoolifyError(
+                        "Refusing to write into a Windows Controlled Folder Access "
+                        "protected directory; choose a workspace report path."
+                    )
+            except ValueError:
+                continue
 
 
 def run(args, client=None):
@@ -39,7 +122,15 @@ def run(args, client=None):
             raise CoolifyError("Required package resources are missing or incomplete; reinstall from the release archive.")
         return {**report, "status": "pass", **found}
     if client is None:
-        client = Client(os.environ.get("COOLIFY_BASE_URL", ""), os.environ.get("COOLIFY_API_TOKEN", ""))
+        allow_private = bool(getattr(args, "allow_private_host", False)) or (
+            os.environ.get("COOLIFY_ALLOW_PRIVATE_HOST", "").strip().lower()
+            in {"1", "true", "yes"}
+        )
+        client = Client(
+            os.environ.get("COOLIFY_BASE_URL", ""),
+            os.environ.get("COOLIFY_API_TOKEN", ""),
+            allow_private_host=allow_private,
+        )
     if args.command == "doctor":
         health = client.get("/health")
         healthy = isinstance(health, str) and health.strip().upper() == "OK"
@@ -125,11 +216,12 @@ def run(args, client=None):
 def preflight_out(path):
     """Validate the report destination before any network access.
 
-    Fails fast on collisions, missing parents and symlinks without
-    creating residue; the exclusive create still happens late.
+    Fails fast on collisions, missing parents, symlinks/junctions, and CFA
+    directories without creating residue; the exclusive create still happens late.
     """
-    if os.path.islink(path):
-        raise CoolifyError("Refusing to write through a symlink; choose a new private report path.")
+    path = Path(path)
+    check_no_symlink_chain(path)
+    check_not_cfa_protected(path)
     if path.exists():
         raise CoolifyError("Output already exists; choose a new private report path.")
     if not path.parent.is_dir():
@@ -160,6 +252,9 @@ def write_report(path, text):
     O_EXCL makes creation atomic; the body streams after. On failure only
     the exact file this call created is removed, never a replacement path.
     """
+    path = Path(path)
+    check_no_symlink_chain(path)
+    check_not_cfa_protected(path)
     flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0)
     try:
         fd = os.open(path, flags, 0o600)
@@ -168,8 +263,7 @@ def write_report(path, text):
     created = None
     try:
         created = os.fstat(fd)
-        if os.path.islink(path):
-            raise CoolifyError("Refusing to write through a symlink; choose a new private report path.")
+        check_no_symlink_chain(path)
         if not stat.S_ISREG(created.st_mode):
             raise CoolifyError("Refusing to write a report to a non-regular file.")
     except BaseException:
@@ -198,6 +292,8 @@ def main(argv=None):
         cmd = sub.add_parser(command)
         if command != "resources":
             cmd.add_argument("--out", type=Path, help="Create a new private JSON report; refuses to overwrite existing files.")
+            cmd.add_argument("--allow-private-host", action="store_true",
+                             help="Allow private RFC1918, ULA, or Tailscale Coolify origins (loopback and link-local remain blocked).")
         if command == "doctor":
             cmd.add_argument("--live", action="store_true", help="Verify instance health and authenticated application listing.")
         if command in ("env", "backups", "plan"):

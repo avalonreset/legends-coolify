@@ -1,11 +1,23 @@
 """Fixed-endpoint GET client. No raw URL, mutation, redirect or secret-output lane."""
+import ipaddress
 import json
+import os
 import re
+import socket
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode, urlsplit
-from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
+from urllib.request import (
+    HTTPRedirectHandler,
+    HTTPSHandler,
+    ProxyHandler,
+    Request,
+    build_opener,
+)
 
 from . import __version__
+
+_THIS_NET = ipaddress.ip_network("0.0.0.0/8")
+_CGNAT_NET = ipaddress.ip_network("100.64.0.0/10")
 
 
 class CoolifyError(Exception):
@@ -15,6 +27,97 @@ class CoolifyError(Exception):
 class NoRedirect(HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         return None
+
+
+def _env_allow_private_host():
+    return os.environ.get("COOLIFY_ALLOW_PRIVATE_HOST", "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+    }
+
+
+def validate_target_ip(ip_text, *, allow_private_host=False):
+    try:
+        ip = ipaddress.ip_address(str(ip_text).split("%", 1)[0])
+    except ValueError as exc:
+        raise CoolifyError("COOLIFY_BASE_URL resolved to an invalid IP address.") from exc
+    candidates = [ip]
+    mapped = getattr(ip, "ipv4_mapped", None)
+    if mapped is not None:
+        candidates.append(mapped)
+    for addr in candidates:
+        if (
+            addr.is_loopback
+            or addr.is_unspecified
+            or addr.is_link_local
+            or addr.is_multicast
+            or (addr.version == 4 and addr in _THIS_NET)
+        ):
+            raise CoolifyError(
+                "COOLIFY_BASE_URL cannot target loopback, unspecified, multicast, "
+                "or link-local metadata addresses."
+            )
+        if not allow_private_host and (
+            addr.is_private
+            or addr.is_reserved
+            or not addr.is_global
+            or (addr.version == 4 and addr in _CGNAT_NET)
+        ):
+            raise CoolifyError(
+                "COOLIFY_BASE_URL resolves to a private or Tailscale address; "
+                "pass --allow-private-host or set COOLIFY_ALLOW_PRIVATE_HOST=1 "
+                "for private-LAN Coolify instances."
+            )
+    return ip
+
+
+def resolve_and_validate_host(hostname, port, *, allow_private_host=False):
+    try:
+        infos = socket.getaddrinfo(
+            hostname, port, socket.AF_UNSPEC, socket.SOCK_STREAM
+        )
+    except OSError as exc:
+        raise CoolifyError(
+            "Coolify request failed: verify network, TLS, instance URL and response format. Details omitted."
+        ) from exc
+    if not infos:
+        raise CoolifyError(
+            "Coolify request failed: verify network, TLS, instance URL and response format. Details omitted."
+        )
+    for info in infos:
+        sockaddr = info[4]
+        if not sockaddr:
+            raise CoolifyError("COOLIFY_BASE_URL resolved to an empty socket address.")
+        validate_target_ip(sockaddr[0], allow_private_host=allow_private_host)
+    return infos
+
+
+class _PinnedHTTPSHandler(HTTPSHandler):
+    def __init__(self, *, allow_private_host=False):
+        super().__init__()
+        self.allow_private_host = bool(allow_private_host)
+
+    def https_open(self, req):
+        parsed = urlsplit(req.full_url)
+        host = (parsed.hostname or "").strip().rstrip(".")
+        port = parsed.port or 443
+        infos = resolve_and_validate_host(
+            host, port, allow_private_host=self.allow_private_host
+        )
+        real_getaddrinfo = socket.getaddrinfo
+
+        def pinned_getaddrinfo(target_host, target_port, *args, **kwargs):
+            norm = (str(target_host) if target_host is not None else "").strip().rstrip(".")
+            if norm.lower() == host.lower():
+                return infos
+            return real_getaddrinfo(target_host, target_port, *args, **kwargs)
+
+        socket.getaddrinfo = pinned_getaddrinfo
+        try:
+            return super().https_open(req)
+        finally:
+            socket.getaddrinfo = real_getaddrinfo
 
 
 LISTS = {"applications", "databases", "services", "servers", "projects"}
@@ -76,8 +179,22 @@ def validated_params(path, params):
     return clean
 
 
+def _reject_duplicate_keys(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"Duplicate JSON key: {key}")
+        result[key] = value
+    return result
+
+
 class Client:
-    def __init__(self, base_url, token, *, timeout=20):
+    def __init__(self, base_url, token, *, timeout=20, allow_private_host=None):
+        self.allow_private_host = (
+            _env_allow_private_host()
+            if allow_private_host is None
+            else bool(allow_private_host)
+        )
         try:
             url = urlsplit(base_url)
             valid = (url.scheme == "https" and url.hostname and not url.username
@@ -88,13 +205,35 @@ class Client:
             valid = False
         if not valid:
             raise CoolifyError("COOLIFY_BASE_URL must be an HTTPS instance origin, without credentials, path, query or fragment.")
+        hostname = (url.hostname or "").strip().rstrip(".").lower()
+        if hostname in {"localhost", "localhost.localdomain"} or hostname.endswith(".localhost"):
+            raise CoolifyError(
+                "COOLIFY_BASE_URL cannot target loopback, unspecified, multicast, "
+                "or link-local metadata addresses."
+            )
+        if hostname.endswith(".ts.net") and not self.allow_private_host:
+            raise CoolifyError(
+                "COOLIFY_BASE_URL targets a private Tailscale hostname; "
+                "pass --allow-private-host or set COOLIFY_ALLOW_PRIVATE_HOST=1."
+            )
+        try:
+            ipaddress.ip_address(hostname.split("%", 1)[0])
+            is_ip_literal = True
+        except ValueError:
+            is_ip_literal = False
+        if is_ip_literal:
+            validate_target_ip(hostname, allow_private_host=self.allow_private_host)
         if not token or not re.fullmatch(r"[\x21-\x7E]+", token):
             raise CoolifyError("Set COOLIFY_API_TOKEN to a read-permission token.")
         self.base_url = base_url.rstrip("/")
         self._token = token
         self.timeout = timeout
-        # Avoid implicit credential routing through ambient proxy settings.
-        self._opener = build_opener(ProxyHandler({}), NoRedirect())
+        # Avoid implicit credential routing through ambient proxy settings and pin resolved IPs.
+        self._opener = build_opener(
+            ProxyHandler({}),
+            NoRedirect(),
+            _PinnedHTTPSHandler(allow_private_host=self.allow_private_host),
+        )
 
     def get(self, path, params=None):
         if not allowed_path(path):
@@ -116,10 +255,12 @@ class Client:
                 text = raw.decode("utf-8")
                 if path in {"/health", "/version"}:
                     try:
-                        return json.loads(text)
+                        return json.loads(text, object_pairs_hook=_reject_duplicate_keys)
                     except ValueError:
                         return text.strip()
-                return json.loads(text)
+                return json.loads(text, object_pairs_hook=_reject_duplicate_keys)
+        except CoolifyError:
+            raise
         except HTTPError as error:
             error.close()
             hint = {

@@ -1,8 +1,15 @@
 # Changelog
 
+## 0.2.3 - 2026-11-11
+
+- Enforce DNS resolution and IP pinning in `legends_coolify/client.py`: always block loopback, unspecified, multicast, and link-local metadata (`169.254.0.0/16`, `fe80::/10`) targets, and reject private RFC1918, ULA, and Tailscale/CGNAT addresses unless `--allow-private-host` (`COOLIFY_ALLOW_PRIVATE_HOST=1`) is explicitly supplied.
+- Enforce full ancestor-chain symlink/junction refusal (`check_no_symlink_chain` with macOS `/var`, `/tmp`, `/etc` allowance) and Windows Controlled Folder Access (CFA) directory protection on `--out` report paths in `legends_coolify/cli.py`.
+- Remove founder path residue in `docs/KNOWLEDGE-PACK.md`, document `legends-coolify resources` and `--allow-private-host` in `docs/AGENT-RECIPE.md` and `AGENTS.md`, and fix CommonMark code-span backtick formatting in `CHANGELOG.md`.
+- Add `PRIVACY.md` and include `.legends-router-pin`, `CODE_OF_CONDUCT.md`, and `PRIVACY.md` across `MANIFEST.in`, `setup.py` wheel `_data/` mirroring, and `scripts/check_release.py`.
+
 ## 0.2.2 - 2026-11-05
 
-- Add `.legends-module`, `docs/router-provenance.json`, and `THIRD_PARTY_NOTICES.md`, remove duplicate `NOTICE.md` and tracked `.obsidian/app.json`, and standardize the `## Agent setup (via \`cto-legends\`)` section in `README.md`.
+- Add `.legends-module`, `docs/router-provenance.json`, and `THIRD_PARTY_NOTICES.md`, remove duplicate `NOTICE.md` and tracked `.obsidian/app.json`, and standardize the ``## Agent setup (via `cto-legends`)`` section in `README.md`.
 - Upgrade `scripts/check_release.py`, `AGENTS.md`, and `docs/AGENT-RECIPE.md` with Windows Defender / EDR anti-ransomware guardrails and knowledge pack hash verification.
 - Pin `avalonreset/legends-empire` `v0.3.4` (`1ede96ad670b60b215b66457369691da6c61d017`) and `pip>=26.2.2` in `.github/workflows/checks.yml`.
 

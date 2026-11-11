@@ -15,6 +15,7 @@ Read `wiki/index.md`. Choose the runbook matching the requested outcome. Follow 
 
 | Goal | Command | Interpretation |
 |---|---|---|
+| Packaged resources | `resources` | Installed recipe and knowledge-pack paths (offline, no `--out`) |
 | Inventory | `inventory` | Team-visible resources, selected fields only |
 | Resource status | `health` | Container/resource state, not business function |
 | Environment review | `env --uuid UUID` | Names and flags, no values |
@@ -24,7 +25,7 @@ Read `wiki/index.md`. Choose the runbook matching the requested outcome. Follow 
 | Deployment history | `deployments --uuid UUID [--limit N] [--skip M]` | Bounded newest-first window with totals; `--limit` 1-50, `--skip` 0-100000 |
 | Single deployment | `deployments --deployment-uuid UUID` | One deployment; response UUID must match |
 
-Reports go to a new private file with `--out PATH`, outside managed sources. Report names and UUIDs may still be sensitive. Do not upload reports to a public issue. Ask only for missing target or material authority, not routine read-only confirmation within an authorized task.
+All inspection commands (everything except `resources`) accept `[--out PATH]` and `[--allow-private-host]` (or `COOLIFY_ALLOW_PRIVATE_HOST=1` in the environment when connecting to a self-hosted private-LAN or Tailscale Coolify origin; loopback, unspecified, and link-local `169.254.0.0/16` / `fe80::/10` metadata addresses are always refused). Reports go to a new private file with `--out PATH`, outside managed sources. Report names and UUIDs may still be sensitive. Do not upload reports to a public issue. Ask only for missing target or material authority, not routine read-only confirmation within an authorized task.
 
 ## Optional knowledge pack
 
@@ -45,5 +46,6 @@ Keep the private receipt in the selected workspace. Propose a sanitized general 
 
 - Never spawn hidden consoles, execution-policy bypass shell wrappers, or background localhost daemons.
 - Never read local browser profile databases, DPAPI stores, or third-party credential stores.
+- Never print raw API keys or tokens in stdout, stderr, or logs.
 - Never follow symlinks or overwrite existing files when writing `--out` reports (`O_CREAT | O_EXCL` new-file semantics only).
 - Use only the explicit `COOLIFY_BASE_URL` and `COOLIFY_API_TOKEN` environment variables over verified HTTPS origins with redirects disabled.

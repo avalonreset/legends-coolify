@@ -29,6 +29,8 @@ REQUIRED_DATA = [
     "legends_coolify/_data/THIRD_PARTY_NOTICES.md",
     "legends_coolify/_data/SUPPORT.md",
     "legends_coolify/_data/CONTRIBUTING.md",
+    "legends_coolify/_data/CODE_OF_CONDUCT.md",
+    "legends_coolify/_data/PRIVACY.md",
     "legends_coolify/_data/AGENTS.md",
     "legends_coolify/_data/docs/AGENT-RECIPE.md",
     "legends_coolify/_data/docs/KNOWLEDGE-PACK.md",
@@ -39,6 +41,8 @@ REQUIRED_DATA = [
     "legends_coolify/_data/skills/cto-legends/SKILL.md",
     "legends_coolify/_data/SECURITY.md",
     "legends_coolify/_data/CHANGELOG.md",
+    "legends_coolify/_data/.legends-module",
+    "legends_coolify/_data/.legends-router-pin",
 ]
 
 

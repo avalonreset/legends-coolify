@@ -157,12 +157,131 @@ class OutputSafety(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertNotIn("secret-sentinel", output.getvalue())
 
+    def test_parent_symlink_and_cfa_refused_on_out(self):
+        import tempfile
+        from legends_coolify.cli import check_no_symlink_chain, check_not_cfa_protected, preflight_out
+
+        with tempfile.TemporaryDirectory() as folder:
+            base = Path(folder)
+            sub = base / "parent" / "child"
+            sub.mkdir(parents=True)
+            report = sub / "report.json"
+            orig_islink = os.path.islink
+
+            def fake_islink(p):
+                if Path(p).name == "parent":
+                    return True
+                return orig_islink(p)
+
+            with patch("legends_coolify.cli.os.path.islink", side_effect=fake_islink):
+                with self.assertRaisesRegex(CoolifyError, "symlink"):
+                    check_no_symlink_chain(report)
+                with self.assertRaisesRegex(CoolifyError, "symlink"):
+                    preflight_out(report)
+
+            fake_home = base / "home"
+            desktop = fake_home / "Desktop"
+            desktop.mkdir(parents=True)
+            with patch.dict(os.environ, {"USERPROFILE": str(fake_home), "HOME": str(fake_home)}):
+                with self.assertRaisesRegex(CoolifyError, "Controlled Folder Access"):
+                    check_not_cfa_protected(desktop / "report.json")
+
+    def test_ssrf_and_private_host_guards(self):
+        import socket
+        from legends_coolify.client import resolve_and_validate_host, validate_target_ip
+
+        # Loopback, unspecified, and link-local metadata are always rejected, even with allow_private_host=True.
+        for always_bad in (
+            "https://localhost",
+            "https://sub.localhost",
+            "https://127.0.0.1",
+            "https://[::1]",
+            "https://0.0.0.0",
+            "https://169.254.169.254",
+            "https://[fe80::1]",
+        ):
+            with self.subTest(origin=always_bad):
+                with self.assertRaisesRegex(CoolifyError, "loopback|unspecified|link-local"):
+                    Client(always_bad, "test-token", allow_private_host=False)
+                with self.assertRaisesRegex(CoolifyError, "loopback|unspecified|link-local"):
+                    Client(always_bad, "test-token", allow_private_host=True)
+
+        # Private RFC1918, ULA, and Tailscale/CGNAT require allow_private_host=True.
+        for private_origin in (
+            "https://10.0.0.5",
+            "https://172.16.0.10",
+            "https://192.168.1.20",
+            "https://100.64.1.2",
+            "https://[fd00::1]",
+            "https://coolify.example.ts.net",
+        ):
+            with self.subTest(origin=private_origin):
+                with self.assertRaisesRegex(CoolifyError, "allow-private-host|COOLIFY_ALLOW_PRIVATE_HOST"):
+                    Client(private_origin, "test-token", allow_private_host=False)
+                c = Client(private_origin, "test-token", allow_private_host=True)
+                self.assertTrue(c.allow_private_host)
+
+        # DNS resolution pinning blocks loopback/link-local always and private unless opted in.
+        with patch("legends_coolify.client.socket.getaddrinfo", return_value=[
+            (socket.AF_INET, socket.SOCK_STREAM, 6, "", ("169.254.169.254", 443))
+        ]):
+            with self.assertRaisesRegex(CoolifyError, "link-local"):
+                resolve_and_validate_host("coolify.example.com", 443, allow_private_host=True)
+
+        with patch("legends_coolify.client.socket.getaddrinfo", return_value=[
+            (socket.AF_INET, socket.SOCK_STREAM, 6, "", ("10.10.0.5", 443))
+        ]):
+            with self.assertRaisesRegex(CoolifyError, "allow-private-host"):
+                resolve_and_validate_host("coolify.example.com", 443, allow_private_host=False)
+            infos = resolve_and_validate_host("coolify.example.com", 443, allow_private_host=True)
+            self.assertEqual(infos[0][4][0], "10.10.0.5")
+        self.assertEqual(str(validate_target_ip("93.184.216.34", allow_private_host=False)), "93.184.216.34")
+
+
+def _clean_png_bytes():
+    import zlib
+
+    def chunk(kind, payload):
+        return (
+            struct.pack(">I", len(payload))
+            + kind
+            + payload
+            + struct.pack(">I", zlib.crc32(kind + payload))
+        )
+
+    return (
+        b"\x89PNG\r\n\x1a\n"
+        + chunk(b"IHDR", b"\x00" * 13)
+        + chunk(b"IDAT", b"\x00")
+        + chunk(b"IEND", b"")
+    )
+
+
+def _clean_webp_bytes():
+    return b"RIFF\x0c\x00\x00\x00WEBPVP8L\x04\x00\x00\x00\x00\x00\x00\x00"
+
 
 def minimal_tree(root):
+    import hashlib
+    skill_bytes = b"# fixture\n"
+    skill_sha = hashlib.sha256(skill_bytes).hexdigest()
     for name in CHECK.REQUIRED:
         target = root / name
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text("# fixture\n", encoding="utf-8")
+        if name.endswith(".png"):
+            target.write_bytes(_clean_png_bytes())
+        elif name.endswith(".webp"):
+            target.write_bytes(_clean_webp_bytes())
+        elif name == "assets/manifest.json":
+            target.write_text('{"files": []}\n', encoding="utf-8")
+        elif name == "docs/router-provenance.json":
+            target.write_text(
+                json.dumps({"sha256": skill_sha}) + "\n", encoding="utf-8"
+            )
+        elif name == "knowledge/coolify/pack.json":
+            target.write_text('{"files": []}\n', encoding="utf-8")
+        else:
+            target.write_bytes(skill_bytes)
 
 
 class CheckerEnhancements(unittest.TestCase):
@@ -222,7 +341,7 @@ class CheckerEnhancements(unittest.TestCase):
             root = Path(folder)
             minimal_tree(root)
             assets = root / "assets"
-            assets.mkdir()
+            assets.mkdir(exist_ok=True)
             (assets / "a.bin").write_bytes(b"raw-bytes")
             good = {"files": [{"name": "a.bin", "bytes": 9,
                                "sha256": hashlib.sha256(b"raw-bytes").hexdigest()}]}

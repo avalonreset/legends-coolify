@@ -12,7 +12,21 @@ import shutil
 from setuptools import setup
 from setuptools.command.build_py import build_py
 
-MIRROR_FILES = ["README.md", "LICENSE", "NOTICE", "THIRD_PARTY_NOTICES.md", "SUPPORT.md", "CONTRIBUTING.md", "AGENTS.md", "SECURITY.md", "CHANGELOG.md"]
+MIRROR_FILES = [
+    "README.md",
+    "LICENSE",
+    "NOTICE",
+    "THIRD_PARTY_NOTICES.md",
+    "SUPPORT.md",
+    "CONTRIBUTING.md",
+    "CODE_OF_CONDUCT.md",
+    "PRIVACY.md",
+    "AGENTS.md",
+    "SECURITY.md",
+    "CHANGELOG.md",
+    ".legends-module",
+    ".legends-router-pin",
+]
 MIRROR_DIRS = ["docs", "knowledge", "skills", "wiki", "references", "templates", "assets"]
 MIRROR_SUFFIXES = {".md", ".json", ".png", ".webp"}
 MIRROR_NAMES = {"LICENSE", "NOTICE"}
