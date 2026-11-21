@@ -28,7 +28,7 @@ MIRROR_FILES = [
     ".legends-router-pin",
 ]
 MIRROR_DIRS = ["docs", "knowledge", "skills", "wiki", "references", "templates", "assets"]
-MIRROR_SUFFIXES = {".md", ".json", ".png", ".webp"}
+MIRROR_SUFFIXES = {".md", ".json", ".png", ".webp", ".svg"}
 MIRROR_NAMES = {"LICENSE", "NOTICE"}
 
 

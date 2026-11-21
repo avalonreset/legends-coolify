@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.4 - 2026-11-21
+
+- Add `scripts/render_cards.py` and render 7 outlined Legends Font `r1` SVG architecture and workflow cards under `assets/cards/r1/`, removing the duplicate root `assets/collection-star-shrine.svg`.
+- Rewrite `README.md` to the evergreen CTO Legends architecture standard with plain english execution chains, two-chamber architecture documentation, collapsible `<details>` reference drawers, and zero hardcoded version or module-count strings.
+- Include `.svg` assets in `MANIFEST.in` and `setup.py` wheel `_data/` mirroring so installed wheel distributions resolve all local card links offline.
+- Synchronize package and knowledge-pack version `0.2.4` across `pyproject.toml`, `legends_coolify/__init__.py`, `knowledge/coolify/pack.json`, `docs/KNOWLEDGE-PACK.md`, `CITATION.cff`, and `scripts/check_release.py`.
+
 ## 0.2.3 - 2026-11-11
 
 - Enforce DNS resolution and IP pinning in `legends_coolify/client.py`: always block loopback, unspecified, multicast, and link-local metadata (`169.254.0.0/16`, `fe80::/10`) targets, and reject private RFC1918, ULA, and Tailscale/CGNAT addresses unless `--allow-private-host` (`COOLIFY_ALLOW_PRIVATE_HOST=1`) is explicitly supplied.

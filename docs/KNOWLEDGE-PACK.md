@@ -9,7 +9,7 @@ reference shelf, not a vault and not a skill.
 - Schema: `legends.knowledge-pack/v1`
 - Id: `coolify`
 - Module: `legends-coolify`
-- Version: `0.2.3`
+- Version: `0.2.4`
 - Entrypoint: `index.md`
 - Suggested home: `wiki/library/legends-coolify/coolify`
 - Ontology kind: `library`

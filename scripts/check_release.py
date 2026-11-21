@@ -42,7 +42,7 @@ REQUIRED = [
     "assets/preview.png",
     "assets/social-preview.png",
 ]
-TEXT_SUFFIXES = {".md", ".py", ".json", ".toml", ".yml", ".in", ".txt", ".cfg", ".ini", ".cff"}
+TEXT_SUFFIXES = {".md", ".py", ".json", ".toml", ".yml", ".in", ".txt", ".cfg", ".ini", ".cff", ".svg"}
 FORBIDDEN = [
     r"(?i)[a-z]:\\users\\",
     r"(?i)\be:[/\\]",
@@ -108,6 +108,28 @@ def check(root: Path = ROOT) -> list[str]:
     for name in REQUIRED:
         if not (root / name).is_file():
             errors.append(f"Missing required file: {name}")
+    pyproject = root / "pyproject.toml"
+    init_py = root / "legends_coolify" / "__init__.py"
+    if pyproject.is_file() and init_py.is_file():
+        m_py = re.search(r'^version\s*=\s*"([^"]+)"', pyproject.read_text(encoding="utf-8-sig"), re.M)
+        m_init = re.search(r'^__version__\s*=\s*"([^"]+)"', init_py.read_text(encoding="utf-8-sig"), re.M)
+        m_cff = re.search(r'^version:\s*"([^"]+)"', (root / "CITATION.cff").read_text(encoding="utf-8-sig"), re.M) if (root / "CITATION.cff").is_file() else None
+        m_chg = re.search(r"^##\s+(\d+\.\d+\.\d+)\b", (root / "CHANGELOG.md").read_text(encoding="utf-8-sig"), re.M) if (root / "CHANGELOG.md").is_file() else None
+        pack_ver = None
+        if (root / "knowledge" / "coolify" / "pack.json").is_file():
+            try:
+                pack_ver = json.loads((root / "knowledge" / "coolify" / "pack.json").read_text(encoding="utf-8-sig")).get("version")
+            except ValueError:
+                pass
+        vers = {
+            m_py.group(1) if m_py else None,
+            m_init.group(1) if m_init else None,
+            m_cff.group(1) if m_cff else None,
+            m_chg.group(1) if m_chg else None,
+            pack_ver,
+        }
+        if None in vers or len(vers) != 1:
+            errors.append(f"Version mismatch across metadata files: {vers}")
     manifest = root / "assets" / "manifest.json"
     if manifest.is_file():
         try:

@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "legends-coolify"
-version = "0.2.3"
-description = "A source-cited Coolify knowledge vault and read-only operational checks for agents."
+version = "0.2.4"
+description = "legends-coolify: Coolify v4 self-hosted PaaS, Docker Compose preflight, env/secret auditing & hash-locked deployment CLI for coding agents"
 requires-python = ">=3.11"
 license = "MIT"
 authors = [{name = "Benjamin Samar / cto-legends"}]
