@@ -16,6 +16,8 @@ readme = "README.md"
 legends-coolify = "legends_coolify.cli:main"
 
 [project.urls]
+Homepage = "https://cto-legends.com/modules/legends-coolify"
+Documentation = "https://cto-legends.com/modules/legends-coolify"
 Repository = "https://github.com/avalonreset/legends-coolify"
 Issues = "https://github.com/avalonreset/legends-coolify/issues"
 
